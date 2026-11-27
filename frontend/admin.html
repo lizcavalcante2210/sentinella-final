@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin-cadstro simples</title>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" style="text-decoration: none;color: aqua;"
+    font-size:14px; display;inline-block;
+    margin-bottom:12px;>voltar para o login </a>
+    <h2>Cadastrar usuario</h2>
+
+    <form id="formUsuario">
+        <input type="text" id="usuario" placeholder="Nome de Usuario (login)" required>
+        <input type="password" id="senha" placeholder="senha" required>
+        <select  id="tipo" required>
+
+
+            <option value="selecione o Usuario"></option>
+            <Option value="atendimento"></Option>
+            <option value="triagem"></option>
+            <option value="medico"></option>
+        
+        </select>
+        <button type="submit" >Cadastrar Usuario</button>
+    </form>
+    <hr style="margin: 25px 0; border:none; border-top:  1px solid #000000;">
+    <h3>usuario cadastrado</h3>
+    <div id="ListarUSUARIOS"></div>
+  </div>  
+  <script>
+    document.getElementById("formUsuario").addEventListener("submit",
+        function(e) {
+            e.preventDefault();
+            const usuario= document.getElementById("usuario").value;
+            const senha= document.getElementById("senha").value;
+            const tipo= document.getElementById("tipo").value;
+
+            fetch("/usuarios", {
+                method: "POST" ,
+                headers:{ "cootent-type": "aplication/json"},
+                body:JSON.stringify({ usuario,senha,tipo})
+            })
+            .then(res => res.json())
+            .then(dados =>{
+                if (dados.erro){
+                    alert("usuario cadastrado com suscesso");
+                    document.getElementById("formUsuario").reset();
+                    carregarUsuarios();
+
+                }
+            });
+        });
+
+        function carregarUsuarios() {
+            fetch("/usuarios")
+            .then(res => res.json())
+        
+            .then(usuarios => {
+            const div = document.getElementById
+            ("listaUsuarios");
+            div.innerHTML = "";
+
+            usuarios.forEach(u => {
+                div.innerHTML += `
+                <div class="card">
+                    <b>usuário:</b> ${u.usuario}
+                    <b>Setor:</b> ${u.tipo}
+                    </div>
+                    `;
+            });
+        });
+       }
+
+       // CARREGA A LISTA AUTOMATICAMENTE AO ABRIR A PÁGINA
+       carregarUsuarios();
+  </script>
+</body>
+</html>
